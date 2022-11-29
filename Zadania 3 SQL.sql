@@ -20,3 +20,20 @@ SELECT DISTINCT Customers.CompanyName, SUM([Order Details].Quantity*[Order Detai
 SELECT TOP 5 Employees.FirstName,Employees.LastName,[Order Details].Discount FROM Employees INNER JOIN Orders ON Orders.EmployeeID=Employees.EmployeeID INNER JOIN [Order Details] ON [Order Details].OrderID=Orders.OrderID  ORDER BY [Order Details].Discount DESC 
 
 SELECT DISTINCT Employees.FirstName,Employees.LastName,AVG([Order Details].Quantity*[Order Details].UnitPrice)  OVER (PARTITION BY Employees.EmployeeID) as 'SREDNIA',MAX([Order Details].Quantity*[Order Details].UnitPrice)  OVER (PARTITION BY Employees.EmployeeID) as 'MAX',MIN([Order Details].Quantity*[Order Details].UnitPrice)  OVER (PARTITION BY Employees.EmployeeID) as 'MIN' FROM Employees INNER JOIN Orders ON Orders.EmployeeID=Employees.EmployeeID INNER JOIN [Order Details] ON [Order Details].OrderID=Orders.OrderID
+
+SELECT
+    COALESCE(Employees.ReportsTo, 0) AS Szefowie, SUM([Order Details].UnitPrice * [Order Details].Quantity * [Order Details].Discount) AS suma_rabatow
+FROM
+    Employees
+RIGHT JOIN
+    Orders
+ON
+    Orders.EmployeeID = Employees.EmployeeID
+LEFT JOIN
+    [Order Details]
+ON
+    Orders.OrderID = [Order Details].OrderID
+GROUP BY
+    Employees.ReportsTo
+ORDER BY
+    Szefowie
